@@ -60,8 +60,12 @@ trait ApprovesChanges
 
             $modification->fresh();
 
-            if ($modification->approversRemaining == 0) {
-                $modification->modifiable->applyModificationChanges($modification, true);
+            if ($modification->approversRemaining == 0 && $modification->is_update) {
+                $modifiable = $modification->is_update
+                    ? new $modification->modifiable_type()
+                    : $modification->modifiable;
+
+                $modifiable->applyModificationChanges($modification, true);
             }
 
             return true;
@@ -100,8 +104,12 @@ trait ApprovesChanges
 
             $modification->fresh();
 
-            if ($modification->disapproversRemaining == 0) {
-                $modification->modifiable->applyModificationChanges($modification, false);
+            if ($modification->disapproversRemaining == 0 && $modification->is_update) {
+                $modifiable = $modification->is_update
+                    ? new $modification->modifiable_type()
+                    : $modification->modifiable;
+
+                $modifiable->applyModificationChanges($modification, false);
             }
 
             return true;

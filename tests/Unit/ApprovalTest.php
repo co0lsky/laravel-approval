@@ -11,7 +11,10 @@ class ApprovalTest extends TestCase
 {
     public function testApprovalProcessCreatedOnUpdate()
     {
-        auth()->login(User::first());
+        /** @var User $user */
+        $user = User::first();
+
+        auth()->login($user);
 
         $post = Post::first();
 
@@ -34,11 +37,18 @@ class ApprovalTest extends TestCase
         $this->assertTrue($modification->modifications['content']['original'] == $originalContent);
         $this->assertTrue($modification->modifications['title']['modified'] == $newTitle);
         $this->assertTrue($modification->modifications['content']['modified'] == $newContent);
+
+        $approval = $user->approve($modification);
+
+        $this->assertTrue($approval);
     }
 
     public function testApprovalProcessCreatedOnCreate()
     {
-        auth()->login(User::first());
+        /** @var User $user */
+        $user = User::first();
+
+        auth()->login($user);
 
         $post = Post::create([
           'title'   => 'Trigger Approval',
@@ -54,5 +64,9 @@ class ApprovalTest extends TestCase
         $this->assertTrue($modification->modifications['title']['modified'] == $post->title);
         $this->assertTrue($modification->modifications['content']['modified'] == $post->content);
         $this->assertTrue($modification->modifiable_id == null);
+
+        $approval = $user->approve($modification);
+
+        $this->assertTrue($approval);
     }
 }
